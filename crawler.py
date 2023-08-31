@@ -39,13 +39,14 @@ def save_data(data: Dict, base_domain: str):
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
     domain_name = base_domain.split("www.")[-1].split("/")[0]
-    output_file = os.path.join(output_dir, f"{domain_name}.json")
+    output_file = os.path.join(output_dir, f"{domain_name}.txt")
     
     with open(output_file, "a") as f:
         f.write(json.dumps(sanitized_data) + "\\n")
 
 # Determine whether to follow a link or not
 def should_follow_link(url: str, base_url: str) -> bool:
+    '''
     parsed_url = urlparse(url)
     parsed_base_url = urlparse(base_url)
     
@@ -55,9 +56,9 @@ def should_follow_link(url: str, base_url: str) -> bool:
     
     # If only the netloc matches (ignoring www and scheme), follow the link
     if parsed_url.netloc.replace("www.", "") == parsed_base_url.netloc.replace("www.", ""):
-        return True
+        return True'''
     
-    return False
+    return True
 
 # Fetch and parse the next URLs to crawl
 def get_next_urls(base_url: str, html: str) -> List[str]:
@@ -78,7 +79,6 @@ def get_next_urls(base_url: str, html: str) -> List[str]:
 
         # Combine both regular and clickable links
         all_links = links + clickable_links
-        print(all_links)
 
         # Filter out already visited URLs and add new ones to the set
         next_urls = [link for link in all_links if should_follow_link(link, base_url) and link not in visited_urls]
@@ -89,6 +89,7 @@ def get_next_urls(base_url: str, html: str) -> List[str]:
 # Main crawling function
 def main_crawl_function(base_domain: str):
     global visited_urls
+    print(f"Crawling: {base_domain}")
     with url_lock:  # Thread-safe operations
         visited_urls.add(base_domain)
     
